@@ -43,6 +43,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { Switch } from "@/components/ui/switch";
 
 const formSchema = z.object({
   assembly: z
@@ -79,6 +80,7 @@ const Page = () => {
   const [results, setResults] = useState<SearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [enablePermutations, setEnablePermutations] = useState(true);
   const [searchStats, setSearchStats] = useState<{
     total: number;
     completed: number;
@@ -94,6 +96,26 @@ const Page = () => {
     },
   });
 
+  const watchedName = form.watch("name");
+  const watchedRelativeName = form.watch("relativeName");
+  const watchedAssembly = form.watch("assembly");
+
+  const totalEstimatedQueries = (() => {
+    const assemblyCount = watchedAssembly?.length || 0;
+    if (assemblyCount === 0) return 0;
+
+    if (!enablePermutations) {
+      return assemblyCount;
+    }
+
+    const nameCount = watchedName ? permuteReplacements(watchedName).length : 1;
+    const relativeNameCount = watchedRelativeName
+      ? permuteReplacements(watchedRelativeName).length
+      : 1;
+
+    return assemblyCount * nameCount * relativeNameCount;
+  })();
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     setError(null);
@@ -101,8 +123,12 @@ const Page = () => {
     setSearchStats(null);
 
     try {
-      const namePermutations = permuteReplacements(values.name);
-      const relativeNamePermutations = permuteReplacements(values.relativeName);
+      const namePermutations = enablePermutations
+        ? permuteReplacements(values.name)
+        : [values.name];
+      const relativeNamePermutations = enablePermutations
+        ? permuteReplacements(values.relativeName)
+        : [values.relativeName];
 
       const combinations: {
         assembly: string;
@@ -300,6 +326,29 @@ const Page = () => {
                           <FormMessage />
                         </FormItem>
                       )}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between space-x-2 border p-4 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                    <div className="flex flex-col space-y-1">
+                      <FormLabel className="text-base">
+                        Fuzzy Search (Permutations)
+                      </FormLabel>
+                      <FormDescription>
+                        Enable to search for name variations (e.g., spelling
+                        differences).
+                        <br />
+                        <span className="text-xs text-muted-foreground">
+                          Current estimated queries:{" "}
+                          <span className="font-mono font-medium text-primary">
+                            {totalEstimatedQueries}
+                          </span>
+                        </span>
+                      </FormDescription>
+                    </div>
+                    <Switch
+                      checked={enablePermutations}
+                      onCheckedChange={setEnablePermutations}
                     />
                   </div>
 
