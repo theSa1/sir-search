@@ -437,6 +437,15 @@ const Page = () => {
                     <Table>
                       <TableHeader>
                         <TableRow className="bg-slate-50 dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-900">
+                          <TableHead className="font-semibold">
+                            Assembly No
+                          </TableHead>
+                          <TableHead className="font-semibold">
+                            Part No
+                          </TableHead>
+                          <TableHead className="font-semibold">
+                            Serial No
+                          </TableHead>
                           <TableHead className="font-semibold">Name</TableHead>
                           <TableHead className="font-semibold">
                             Relative Name
@@ -446,12 +455,6 @@ const Page = () => {
                           </TableHead>
                           <TableHead className="font-semibold">
                             Gender/Age
-                          </TableHead>
-                          <TableHead className="font-semibold">
-                            Part No
-                          </TableHead>
-                          <TableHead className="font-semibold">
-                            Serial No
                           </TableHead>
                           <TableHead className="font-semibold">
                             EPIC No
@@ -467,14 +470,13 @@ const Page = () => {
                             key={`${row.epicNo}-${index}`}
                             className="hover:bg-slate-50 dark:hover:bg-slate-800/50"
                           >
-                            <TableCell className="font-medium">
-                              {row.name}
-                            </TableCell>
+                            <TableCell>{row.assemblyNo}</TableCell>
+                            <TableCell>{row.partNo}</TableCell>
+                            <TableCell>{row.serialNo}</TableCell>
+                            <TableCell>{row.name}</TableCell>
                             <TableCell>{row.relativeName}</TableCell>
                             <TableCell>{row.relation}</TableCell>
                             <TableCell>{row.gender}</TableCell>
-                            <TableCell>{row.partNo}</TableCell>
-                            <TableCell>{row.serialNo}</TableCell>
                             <TableCell>
                               <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded text-xs">
                                 {row.epicNo.trim() === "" ? "N/A" : row.epicNo}
